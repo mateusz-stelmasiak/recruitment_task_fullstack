@@ -1,0 +1,17 @@
+parameters:
+  app.supportedCurrencies:
+    EUR:
+      buy_margin: 0.05
+      sell_margin: 0.07
+    USD:
+      buy_margin: 0.05
+      sell_margin: 0.07
+    CZK:
+      buy_margin: null
+      sell_margin: 0.15
+    IDR:
+      buy_margin: null
+      sell_margin: 0.15
+    BRL:
+      buy_margin: null
+      sell_margin: 0.15
