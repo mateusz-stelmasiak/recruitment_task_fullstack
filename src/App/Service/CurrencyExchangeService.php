@@ -14,9 +14,9 @@ class CurrencyExchangeService
     private $supportedCurrencies;
     private $nbpApiClient;
 
-    public function __construct(ParameterBagInterface $params, NbpApiClient $nbpApiClient)
+    public function __construct(array $supportedCurrencies, NbpApiClient $nbpApiClient)
     {
-        $this->supportedCurrencies = $params->get('app.supportedCurrencies');
+        $this->supportedCurrencies = $supportedCurrencies;
         $this->nbpApiClient = $nbpApiClient;
     }
 

@@ -2,15 +2,14 @@ import React from "react"
 import useBackendAPI from "../../hooks/useBackendAPI";
 import {getCurrentDate} from "../../utils";
 import ExchangeRateRow from "./ExchangeRatesRow";
+import Spinner from "../Spinner";
 
 export default function ExchangeRatesTable({date}) {
     const {data, loading, error} = useBackendAPI(date);
 
     // Display spinner while the data is loading
     if (loading) {
-        return <div className={'text-center'}>
-            <span className="fa fa-spin fa-spinner fa-4x"></span>
-        </div>
+        return <Spinner/>
     }
 
     // Display a message if no data is available.

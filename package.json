@@ -17,9 +17,11 @@
         "dev-server": "encore dev-server",
         "dev": "encore dev",
         "watch": "encore dev --watch",
-        "build": "encore production --progress"
+        "build": "encore production --progress",
+        "test": "jest"
     },
     "dependencies": {
+        "@testing-library/jest-dom": "^6.2.0",
         "axios": "^1.6.0",
         "prop-types": "^15.8.1",
         "react": "^17.0.2",

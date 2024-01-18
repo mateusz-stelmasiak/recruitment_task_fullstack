@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Client\NbpApiClient;
 use App\Entity\Currency;
 use App\Entity\ExchangeRate;
 use App\Exception\InvalidDateException;
@@ -13,23 +14,17 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ExchangeRatesController extends AbstractController
 {
-    private $currencyExchangeService;
 
-
-    public function __construct(CurrencyExchangeService $currencyExchangeService)
+    public function getRatesByDate(CurrencyExchangeService $currencyExchangeService, string $date): JsonResponse
     {
-        $this->currencyExchangeService = $currencyExchangeService;
 
-    }
-
-    public function getRatesByDate(string $date): JsonResponse
-    {
         try {
             $this->validateDate($date);
-            $rates = $this->currencyExchangeService->getRatesByDate($date);
+            $rates = $currencyExchangeService->getRatesByDate($date);
             return new JsonResponse($rates, Response::HTTP_OK);
         } catch (InvalidDateException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -37,6 +32,7 @@ class ExchangeRatesController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * @throws InvalidDateException

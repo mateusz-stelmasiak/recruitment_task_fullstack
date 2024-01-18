@@ -13,44 +13,47 @@ class NbpApiClientTest extends TestCase
 {
     private $httpClientMock;
     private $nbpApiClient;
-    private $parameterBagMock;
+    private $mockEarliestDateAvailable;
 
 
     protected function setUp(): void
     {
-        $this->httpClientMock = $this->createMock(HttpClientInterface::class);
-        $this->parameterBagMock = $this->createMock(ParameterBagInterface::class);
-        $this->parameterBagMock->method('get')
-            ->with('app.earliest_date_available')
-            ->willReturn('2023-07-08');
-
-        $this->nbpApiClient = new NbpApiClient($this->parameterBagMock, $this->httpClientMock);
+        $this->httpClientMock = $this->createStub(HttpClientInterface::class);
+        $this->mockEarliestDateAvailable = "2023-07-08";
+        $this->nbpApiClient = new NbpApiClient($this->mockEarliestDateAvailable, $this->httpClientMock);
     }
 
-    public function testValidateDateForDateBeforeCutoff()
+    public function wrongDateProvider(): Generator
+    {
+        // Date before the cutoff
+        $cutoffDate = new DateTime("2023-07-08");
+        $beforeCutoff = $cutoffDate->modify('-3 day')->format('Y-m-d');
+        yield 'date before the cutoff' => [$beforeCutoff];
+
+        // Future date
+        $today = new DateTime();
+        $futureDate = $today->modify('+2 day')->format('Y-m-d');
+        yield 'future date' => [$futureDate];
+
+        // Invalid date format
+        yield 'invalid date format'=>["12-12-2023"];
+
+        // Not a date
+        yield 'string that\'s not a date'=>["not-a-date"];
+
+        // Not a string
+        yield 'not a string'=>[9];
+    }
+
+    /**
+     * @dataProvider wrongDateProvider
+     */
+    public function testValidateDateForInvalidDate($invalidDate)
     {
         $this->expectException(InvalidDateException::class);
-        // Get cutoff date from parameter, subtract couple days from it
-
-        $cutoffDate = clone $this->nbpApiClient->earliestDateAvailable;
-        $invalidDate = $cutoffDate->modify('-3 day')->format('Y-m-d');
-
         $this->nbpApiClient->fetchCurrencyData('EUR', $invalidDate);
     }
 
-    public function testValidateDateForFutureDate()
-    {
-        $this->expectException(InvalidDateException::class);
-        $today = new DateTime();
-        $futureDate = $today->modify('+2 day')->format('Y-m-d');
-        $this->nbpApiClient->fetchCurrencyData('EUR', $futureDate);
-    }
-
-    public function testValidateDateForInvalidDateFormat()
-    {
-        $this->expectException(InvalidDateException::class);
-        $this->nbpApiClient->fetchCurrencyData('EUR', 'invalid-date');
-    }
 
     public function testFetchCurrencyDataNoDataException()
     {
@@ -66,7 +69,7 @@ class NbpApiClientTest extends TestCase
     {
         $mockResponse = new MockResponse(json_encode(['currency' => 'EUR', 'rates' => [['mid' => 4.50]]]));
         $mockHttpClient = new MockHttpClient($mockResponse);
-        $this->nbpApiClient = new NbpApiClient($this->parameterBagMock, $mockHttpClient);
+        $this->nbpApiClient = new NbpApiClient($this->mockEarliestDateAvailable, $mockHttpClient);
 
 
         $result = $this->nbpApiClient->fetchCurrencyData('EUR', $this->getValidDate());
@@ -79,7 +82,7 @@ class NbpApiClientTest extends TestCase
 
         $mockResponse = new MockResponse(json_encode([]));
         $mockHttpClient = new MockHttpClient($mockResponse);
-        $this->nbpApiClient = new NbpApiClient($this->parameterBagMock, $mockHttpClient);
+        $this->nbpApiClient = new NbpApiClient($this->mockEarliestDateAvailable, $mockHttpClient);
 
         $this->nbpApiClient->fetchCurrencyData('EUR', $this->getValidDate());
     }

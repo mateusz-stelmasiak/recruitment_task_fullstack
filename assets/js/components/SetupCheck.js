@@ -2,6 +2,7 @@
 
 import React, {Component} from 'react';
 import axios from 'axios';
+import Spinner from "./Spinner";
 
 class SetupCheck extends Component {
     constructor() {
@@ -40,9 +41,7 @@ class SetupCheck extends Component {
                                 <h2 className="text-center"><span>This is a test</span> @ Telemedi</h2>
 
                                 {loading ? (
-                                    <div className={'text-center'}>
-                                        <span className="fa fa-spin fa-spinner fa-4x"></span>
-                                    </div>
+                                    <Spinner/>
                                 ) : (
                                     <div className={'text-center'}>
                                         { this.state.setupCheck === true ? (

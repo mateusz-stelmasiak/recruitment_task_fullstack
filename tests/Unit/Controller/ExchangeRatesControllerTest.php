@@ -15,18 +15,18 @@ class ExchangeRatesControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->currencyExchangeServiceMock = $this->createMock(CurrencyExchangeService::class);
-        $this->controller = new ExchangeRatesController($this->currencyExchangeServiceMock);
+        $this->controller = new ExchangeRatesController();
     }
 
     public function testValidateDateNotADate()
     {
-        $response = $this->controller->getRatesByDate('not-a-date');
+        $response = $this->controller->getRatesByDate($this->currencyExchangeServiceMock,'not-a-date');
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
     public function testValidateDateWrongFormat()
     {
-        $response = $this->controller->getRatesByDate('01-01-2023'); // Wrong format
+        $response = $this->controller->getRatesByDate($this->currencyExchangeServiceMock,'01-01-2023'); // Wrong format
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
@@ -37,7 +37,7 @@ class ExchangeRatesControllerTest extends TestCase
             ->with($validDate)
             ->willReturn([]);
 
-        $response = $this->controller->getRatesByDate($validDate);
+        $response = $this->controller->getRatesByDate($this->currencyExchangeServiceMock,$validDate);
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
     }
 

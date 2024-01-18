@@ -18,16 +18,15 @@ use Exception;
 
 class NbpApiClient
 {
+    private const API_BASE_URL = 'https://api.nbp.pl/api/';
     private $client;
-    private $apiBaseUrl;
     public $earliestDateAvailable;
 
 
-    public function __construct(ParameterBagInterface $params, HttpClientInterface $client = null)
+    public function __construct(string $earliestDateAvailable, HttpClientInterface $client)
     {
-        $this->client = $client ?? HttpClient::create();
-        $this->apiBaseUrl = 'https://api.nbp.pl/api/';
-        $this->earliestDateAvailable = new DateTime($params->get('app.earliest_date_available'));
+        $this->client = $client;
+        $this->earliestDateAvailable = new DateTime($earliestDateAvailable);
     }
 
     /**
@@ -76,7 +75,7 @@ class NbpApiClient
     {
         $endpoint = "exchangerates/rates/A/{$currencyCode}/{$date}?format=json";
 
-        $response = $this->client->request(Request::METHOD_GET, $this->apiBaseUrl . $endpoint);
+        $response = $this->client->request(Request::METHOD_GET, self::API_BASE_URL . $endpoint);
         $statusCode = $response->getStatusCode();
 
         // Handle no data

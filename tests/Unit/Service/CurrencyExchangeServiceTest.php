@@ -27,13 +27,7 @@ class CurrencyExchangeServiceTest extends TestCase
         // Mock up nbp API Client
         $this->nbpApiClientMock = $this->createMock(NbpApiClient::class);
 
-        // Mock up parameters bag
-        $parameterBagMock = $this->createMock(ParameterBagInterface::class);
-        $parameterBagMock->method('get')
-            ->with('app.supportedCurrencies')
-            ->willReturn($supportedCurrencies);
-
-        $this->currencyExchangeService = new CurrencyExchangeService($parameterBagMock, $this->nbpApiClientMock);
+        $this->currencyExchangeService = new CurrencyExchangeService($supportedCurrencies, $this->nbpApiClientMock);
     }
     public function testBuyingRateCalculation()
     {

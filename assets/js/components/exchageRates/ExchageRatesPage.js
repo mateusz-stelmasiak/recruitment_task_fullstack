@@ -34,7 +34,7 @@ export default function ExchangeRatesPage() {
                                     </p>
                                 </div>
                                 <div className="d-flex flex-column align-items-end">
-                                    <label htmlFor="datePicker">Choose a different date</label>
+                                    <label htmlFor="datePicker">Choose a date</label>
                                     <input type="date"
                                            id="datePicker"
                                            onChange={handleDateChange}
