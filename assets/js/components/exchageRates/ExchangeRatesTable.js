@@ -3,8 +3,8 @@ import useBackendAPI from "../../hooks/useBackendAPI";
 import {getCurrentDate} from "../../utils";
 import ExchangeRateRow from "./ExchangeRatesRow";
 
-export default function ExchangeRatesTable({date}) {
-    const {data, loading, error} = useBackendAPI(date);
+export default function ExchangeRatesTable({date,data,loading,error}) {
+
 
     // Display spinner while the data is loading
     if (loading) {
@@ -23,39 +23,41 @@ export default function ExchangeRatesTable({date}) {
     }
 
     return (
-        <table className="table">
-            <thead className="thead-dark">
-            <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>NBP</th>
-                <th>Sell</th>
-                <th>Buy</th>
-            </tr>
-            </thead>
+        <>
+            <table className="table">
+                <thead className="thead-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>NBP</th>
+                    <th>Sell</th>
+                    <th>Buy</th>
+                </tr>
+                </thead>
 
-            <tbody>
+                <tbody>
 
-            {Object.keys(data[date])?.map((currencyCode) => {
-                const currentDate = getCurrentDate();
-                const currencyData = {
-                    ...data[date][currencyCode],
-                    code: currencyCode,
-                }
-                // Handles the case when there are values to compare to
-                if (date !== currentDate) {
-                    const comparisonData = {
-                        ...data[currentDate][currencyCode],
-                        code: currencyCode
+                {Object.keys(data[date])?.map((currencyCode) => {
+                    const currentDate = getCurrentDate();
+                    const currencyData = {
+                        ...data[date][currencyCode],
+                        code: currencyCode,
                     }
-                    return <ExchangeRateRow data={currencyData} key={currencyCode}
-                                            comparisonData={comparisonData}/>
-                }
+                    // Handles the case when there are values to compare to
+                    if (date !== currentDate) {
+                        const comparisonData = {
+                            ...data[currentDate][currencyCode],
+                            code: currencyCode
+                        }
+                        return <ExchangeRateRow data={currencyData} key={currencyCode}
+                                                comparisonData={comparisonData}/>
+                    }
 
-                return <ExchangeRateRow data={currencyData} key={currencyCode}/>
-            })}
-            </tbody>
-        </table>
+                    return <ExchangeRateRow data={currencyData} key={currencyCode}/>
+                })}
+                </tbody>
+            </table>
+        </>
     );
 }
 

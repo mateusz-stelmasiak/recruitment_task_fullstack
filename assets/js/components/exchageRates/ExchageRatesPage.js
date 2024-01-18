@@ -2,16 +2,19 @@ import React, {useState} from 'react';
 import ExchangeRatesTable from "./ExchangeRatesTable";
 import {useParams, useHistory} from "react-router-dom";
 import {getCurrentDate} from "../../utils";
+import useBackendAPI from "../../hooks/useBackendAPI";
+import ExchangeRatesCalculator from "./calculator/ExchangeRatesCalculator";
 
 export default function ExchangeRatesPage() {
     const history = useHistory();
     const {chosenDate} = useParams(); //gets chosen date from url (if exists)
     const [selectedDate, setSelectedDate] = useState(chosenDate || getCurrentDate());
+    const {data, loading, error} = useBackendAPI(selectedDate);
 
     let handleDateChange = (e) => {
         let selected = e.target.value;
         // Handle user clicking the "clear" button in datepicker UI
-        if(!selected){
+        if (!selected) {
             selected = getCurrentDate();
         }
         setSelectedDate(selected);
@@ -46,9 +49,23 @@ export default function ExchangeRatesPage() {
 
                                 </div>
                             </div>
+
                             <div className={"mt-3"}>
-                                <ExchangeRatesTable date={selectedDate}/>
+                                <ExchangeRatesTable
+                                    date={selectedDate}
+                                    data={data}
+                                    loading={loading}
+                                    error={error}
+                                />
                             </div>
+                            {(!loading && data[selectedDate])&&
+                                <div className={"mt-3 mb-3"}>
+                                    <ExchangeRatesCalculator
+                                        data={data[selectedDate]}
+                                    />
+                                </div>
+                            }
+
 
                         </div>
                     </div>
